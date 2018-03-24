@@ -1,0 +1,137 @@
+
+DEBUG=app_express:* & npm run devstart
+
+mongod --config /usr/local/etc/mongod.conf
+brew services start mongodb
+
+
+/data/db folder is the mongodb main folder
+homebrew service has path folder to /usr/local/var/mongodb
+
+mongod //server (not mongodb)
+mongo //terminal interactive js
+
+brew services start mongodb
+mongo
+brew services stop mongodb
+
+
+node populatedb <your mongodb url>​​​​
+mongodb://127.0.0.1/my_database is the url i populateddb in 
+node populatedb mongodb://127.0.0.1/my_database
+
+homebrew and mongod seem to use different mongos and therefore have different (show dbs) results
+
+mongo uses the mongod version
+
+------ syntax for mongo---
+
+use db 
+show dbs 
+show collections 
+db.createCollection("mycol")
+db.mycol.drop()
+
+db.mycol.insert({
+	_id: ObjectId(7df78ad8902c),
+   title: 'MongoDB Overview', 
+   description: 'MongoDB is no sql database',
+   by: 'tutorials point',
+   url: 'http://www.tutorialspoint.com',
+   tags: ['mongodb', 'database', 'NoSQL'],
+   likes: 100
+})
+
+
+"In the inserted document, if we don't specify the _id parameter, then MongoDB assigns a unique ObjectId for this document."
+
+Can also pass an array of documents as below
+
+
+db.post.insert([
+   {
+      title: 'MongoDB Overview', 
+      description: 'MongoDB is no sql database',
+      by: 'tutorials point',
+      url: 'http://www.tutorialspoint.com',
+      tags: ['mongodb', 'database', 'NoSQL'],
+      likes: 100
+   },
+	
+   {
+      title: 'NoSQL Database', 
+      description: "NoSQL database doesn't have tables",
+      by: 'tutorials point',
+      url: 'http://www.tutorialspoint.com',
+      tags: ['mongodb', 'database', 'NoSQL'],
+      likes: 20, 
+      comments: [	
+         {
+            user:'user1',
+            message: 'My first comment',
+            dateCreated: new Date(2013,11,10,2,35),
+            like: 0 
+         }
+      ]
+   }
+])
+
+query results 
+
+db.mycol.find().pretty()
+
+db.authors.find({"first_name":"Jim"}).pretty()
+db.mycol.find({"likes":{$lte:50}}).pretty()
+db.authors.find({"first_name":"Jim","_id":ObjectId("5ab32eed5877fba2cd945dda")}).pretty() // twp conditions separated by comma
+
+//or you can use the complete syntax
+
+db.mycol.find(
+   {
+      $and: [
+         {key1: value1}, {key2:value2}
+      ]
+   }
+).pretty()
+
+db.mycol.find(
+   {
+      $or: [
+         {key1: value1}, {key2:value2}
+      ]
+   }
+).pretty()
+
+//AND and OR
+b.mycol.find({"likes": {$gt:10}, $or: [{"by": "tutorials point"},
+   {"title": "MongoDB Overview"}]}).pretty()
+
+//updating document
+db.mycol.update({'title':'MongoDB Overview'},{$set:{'title':'New MongoDB Tutorial'}})
+
+// in addition to insert you can also use save
+db.mycol.save(
+   {
+      "_id" : ObjectId(5983548781331adf45ec7), "title":"Tutorials Point New Topic",
+         "by":"Tutorials Point"
+   }
+)
+
+//delete docs with condition 
+db.mycol.remove({'title':'MongoDB Overview'})
+
+//delete first doc with condition
+db.COLLECTION_NAME.remove(DELETION_CRITERIA,1)
+db.mycol.remove({'title':'MongoDB Overview'},1)
+
+//delete all docs
+db.mycol.remove()
+
+//delete database 
+use [database];
+db.dropDatabase();
+
+//delete collection
+db.collection.drop()
+
+
